@@ -1,6 +1,9 @@
 class UsersController < ApplicationController
-  def show
-    @user = User.find(params[:id])
+  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :require_user, only: [:edit, :update]
+  before_action :require_same_user, only: [:edit, :update, :destroy]
+  
+  def show 
   end
 
   def index
@@ -15,6 +18,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
+      session[:user_id] = @user.id
       flash[:notice] = "Welcome to Alpha Blog #{@user.username}, you have successfully sing up."
       redirect_to articles_path
     else
@@ -23,11 +27,9 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
   end
 
   def update
-    @user = User.find(params[:id])
 
     if @user.update(user_params)
       flash[:notice] = 'Your account information successfully updated'
@@ -37,9 +39,27 @@ class UsersController < ApplicationController
     end
   end
 
+  def destroy
+    @user.destroy
+    session[:user_id] = nil if @user == current_user
+    flash[:notice] = 'Account successfully deleted'
+    redirect_to articles_path
+  end
+
   private
+
+  def set_user
+    @user = User.find(params[:id])
+  end
 
   def user_params
     params.require(:user).permit(:username, :email, :password)
+  end
+
+  def require_same_user
+    return unless current_user != @user && !current_user.admin?
+
+    flash[:alert] = 'You can only edit or delete your account'
+    redirect_to @user
   end
 end
