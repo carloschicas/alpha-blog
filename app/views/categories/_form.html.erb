@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="row justify-content-md-center">
+    <div class="col-10 justify-content-md-center">
+      <%= render 'shared/errors', obj: @category %>
+      <%= form_with(model: @category, class: 'shadow p-3 mb-5 bg-info rounded', local: true) do |f| %>
+        <div class="mb-3">
+          <%= f.label :name, 'Category name', class: 'form-label text-light' %>
+          <%= f.text_field :name, class: 'form-control', placeholder: 'Enter a category name' %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.submit class: 'btn btn-outline-light btn-lg' %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mb-3">
+      <%= link_to ' [ Cancel ] ', articles_path, class: 'text-info' %>
+    </div>
+  </div>
+</div>
